@@ -1,0 +1,25 @@
+/ip firewall address-list
+add address=183.91.86.147 comment="ip public bpjs" list=allow_bridging_bpjs
+add address=43.248.212.131 list=allow_bridging_bpjs
+add address=36.94.177.253 list=allow_bridging_bpjs
+add address=182.253.97.178 list=allow_bridging_bpjs
+
+/ip firewall filter
+add action=drop chain=forward comment="Drop IP Selain Bridging BPJS" \
+    dst-port=8081 protocol=tcp src-address-list=!allow_bridging_bpjs
+add action=drop chain=input comment="Drop IP Selain Bridging BPJS" \
+    dst-port=8081 protocol=tcp src-address-list=!allow_bridging_bpjs	
+add action=drop chain=forward comment="Drop IP Selain Bridging BPJS" \
+    dst-port=8081 protocol=udp src-address-list=!allow_bridging_bpjs
+add action=drop chain=input comment="Drop IP Selain Bridging BPJS" \
+    dst-port=8081 protocol=udp src-address-list=!allow_bridging_bpjs
+add action=drop chain=forward comment="Drop IP Selain Bridging BPJS" \
+    dst-port=8082 protocol=tcp src-address-list=!allow_bridging_bpjs
+add action=drop chain=input comment="Drop IP Selain Bridging BPJS" \
+    dst-port=8082 protocol=tcp src-address-list=!allow_bridging_bpjs
+add action=drop chain=forward comment="Drop IP Selain Bridging BPJS" \
+    dst-port=8082 protocol=udp src-address-list=!allow_bridging_bpjs
+add action=drop chain=input comment="Drop IP Selain Bridging BPJS" \
+    dst-port=8082 protocol=udp src-address-list=!allow_bridging_bpjs
+	
+	

@@ -1,0 +1,9 @@
+/ip firewall filter
+add action=drop chain=forward comment="Drop SSH Server SIMRS INOVA" \
+    dst-address=192.168.4.5 dst-port=543 protocol=tcp src-address-list=\
+    !allow_ssh_server
+
+/ip firewall address-list
+add address=bitbucket.org list=allow_ssh_server
+add address=10.16.1.6 list=allow_ssh_server
+add address=36.64.197.53 list=allow_ssh_server

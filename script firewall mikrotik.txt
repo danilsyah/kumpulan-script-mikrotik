@@ -1,0 +1,128 @@
+/ip firewall filter
+add chain=forward connection-state=new src-address-list=ddoser dst-address-list=ddosed action=drop comment="Drop DDoS Attacker"
+add chain=forward connection-state=new action=jump jump-target=detect-ddos
+add chain=detect-ddos dst-limit=32,32,src-and-dst-addresses/1s action=return
+add chain=detect-ddos action=return
+add chain=detect-ddos action=add-dst-to-address-list address-list=ddosed address-list-timeout=10m
+add chain=detect-ddos action=add-src-to-address-list address-list=ddoser address-list-timeout=10m
+
+/ip firewall filter
+add action=add-src-to-address-list address-list=PortScannerAttacker \
+    address-list-timeout=none-static chain=forward comment=\
+    "drop port scanner attacker" log=yes protocol=tcp psd=21,3s,3,1
+add action=add-src-to-address-list address-list=PortScannerAttacker \
+    address-list-timeout=none-static chain=input log=yes protocol=tcp psd=\
+    21,3s,3,1
+add action=drop chain=forward protocol=tcp src-address-list=\
+    PortScannerAttacker log=yes
+add action=drop chain=input protocol=tcp src-address-list=PortScannerAttacker log=yes
+
+
+add action=drop chain=forward comment="Block Service Location Protocol (SLP)" \
+    dst-port=427 protocol=tcp
+add action=drop chain=forward comment="Block Service Location Protocol (SLP)" \
+    dst-port=427 protocol=udp
+	
+add chain=input connection-state=related action=accept comment="Allow releated connections"
+add chain=input connection-state=established action=accept comment="Allow established connections"
+add chain=forward connection-state=related action=accept comment="Allow releated connections"
+add chain=forward connection-state=established action=accept comment="Allow established connections"
+add chain=forward connection-state=invalid action=drop comment="Drop invalid connections"
+add chain=virus protocol=tcp dst-port=135-139 action=drop comment="Blaster Worm"
+add chain=virus protocol=udp dst-port=135-139 action=drop comment="Messenger Worm"
+add chain=virus protocol=tcp dst-port=445 action=drop comment="Blaster Worm"
+add chain=virus protocol=udp dst-port=445 action=drop comment="Blaster Worm"
+add chain=virus protocol=tcp dst-port=593 action=drop comment="________"
+add chain=virus protocol=tcp dst-port=1024-1030 action=drop comment="________"
+add chain=virus protocol=tcp dst-port=1080 action=drop comment="Drop MyDoom"
+add chain=virus protocol=tcp dst-port=1214 action=drop comment="________"
+add chain=virus protocol=tcp dst-port=1363 action=drop comment="ndm requester"
+add chain=virus protocol=tcp dst-port=1364 action=drop comment="ndm server"
+add chain=virus protocol=tcp dst-port=1368 action=drop comment="screen cast"
+add chain=virus protocol=tcp dst-port=1373 action=drop comment="hromgrafx"
+add chain=virus protocol=tcp dst-port=1377 action=drop comment="cichlid"
+add chain=virus protocol=tcp dst-port=2745 action=drop comment="Bagle Virus"
+add chain=virus protocol=tcp dst-port=2283 action=drop comment="Dumaru.Y"
+add chain=virus protocol=tcp dst-port=2535 action=drop comment="Beagle"
+add chain=virus protocol=tcp dst-port=2745 action=drop comment="Beagle.C-K"
+add chain=virus protocol=tcp dst-port=3127-3128 action=drop comment="MyDoom"
+add chain=virus protocol=tcp dst-port=3410 action=drop comment="Backdoor OptixPro"
+add chain=virus protocol=tcp dst-port=4444 action=drop comment="Worm"
+add chain=virus protocol=udp dst-port=4444 action=drop comment="Worm"
+add chain=virus protocol=tcp dst-port=5554 action=drop comment="Drop Sasser"
+add chain=virus protocol=tcp dst-port=8866 action=drop comment="Drop Beagle.B"
+add chain=virus protocol=tcp dst-port=9898 action=drop comment="Drop Dabber.A-B"
+add chain=virus protocol=tcp dst-port=10000 action=drop comment="Drop Dumaru.Y"
+add chain=virus protocol=tcp dst-port=10080 action=drop comment="Drop MyDoom.B"
+add chain=virus protocol=tcp dst-port=12345 action=drop comment="Drop NetBus"
+add chain=virus protocol=tcp dst-port=17300 action=drop comment="Drop Kuang2"
+add chain=virus protocol=tcp dst-port=27374 action=drop comment="Drop SubSeven"
+add chain=virus protocol=tcp dst-port=65506 action=drop comment="Drop PhatBot,Agobot, Gaobot"
+add chain=virus protocol=udp dst-port=12667 action=drop comment="Trinoo" disabled=no
+add chain=virus protocol=udp dst-port=27665 action=drop comment="Trinoo" disabled=no
+add chain=virus protocol=udp dst-port=31335 action=drop comment="Trinoo" disabled=no
+add chain=virus protocol=udp dst-port=27444 action=drop comment="Trinoo" disabled=no
+add chain=virus protocol=udp dst-port=34555 action=drop comment="Trinoo" disabled=no
+add chain=virus protocol=udp dst-port=35555 action=drop comment="Trinoo" disabled=no
+add chain=virus protocol=tcp dst-port=27444 action=drop comment="Trinoo" disabled=no
+add chain=virus protocol=tcp dst-port=27665 action=drop comment="Trinoo" disabled=no
+add chain=virus protocol=tcp dst-port=31335 action=drop comment="Trinoo" disabled=no
+add chain=virus protocol=tcp dst-port=31846 action=drop comment="Trinoo" disabled=no
+add chain=virus protocol=tcp dst-port=34555 action=drop comment="Trinoo" disabled=no
+add chain=virus protocol=tcp dst-port=35555 action=drop comment="Trinoo" disabled=no
+add chain=forward action=jump jump-target=virus comment="jump to the virus chain"
+
+add action=drop chain=input comment="drop SSH&TELNET Brute Forcers" disabled=no dst-port=22-23 protocol=tcp src-address-list=IP_BlackList
+add action=add-src-to-address-list address-list=IP_BlackList address-list-timeout=1d chain=input comment="" connection-state=new disabled=no dst-port=22-23 protocol=tcp src-address-list=SSH_BlackList_3
+add action=add-src-to-address-list address-list=SSH_BlackList_3 address-list-timeout=1m chain=input comment="" connection-state=new disabled=no dst-port=22-23 protocol=tcp src-address-list=SSH_BlackList_2
+add action=add-src-to-address-list address-list=SSH_BlackList_2 address-list-timeout=1m chain=input comment="" connection-state=new disabled=no dst-port=22-23 protocol=tcp src-address-list=SSH_BlackList_1
+add action=add-src-to-address-list address-list=SSH_BlackList_1 address-list-timeout=1m chain=input comment="" connection-state=new disabled=no dst-port=22-23 protocol=tcp
+
+add action=drop chain=input comment="drop FTP Brute Forcers" disabled=no dst-port=21 protocol=tcp src-address-list=FTP_BlackList
+add action=drop chain=input comment="" disabled=no dst-port=21 protocol=tcp src-address-list=FTP_BlackList
+add action=accept chain=output comment="" content="530 Login incorrect" disabled=no dst-limit=1/1m,9,dst-address/1m protocol=tcp
+add action=add-dst-to-address-list address-list=FTP_BlackList address-list-timeout=1d chain=output comment="" content="530 Login incorrect" disabled=no protocol=tcp
+
+/ip firewall raw
+add action=accept chain=prerouting comment="DDoS TCP Syn Attack " limit=\
+    400,5:packet protocol=tcp tcp-flags=syn
+add action=drop chain=prerouting comment="Block DDoS TCP Syn Attack" \
+    protocol=tcp tcp-flags=syn
+	
+/ip firewall address-list
+add address=194.145.227.242 list=ip_blacklist
+add address=106.11.250.224 list=ip_blacklist
+add address=51.255.171.23 list=ip_blacklist
+add address=194.38.23.170 list=ip_blacklist
+add address=194.145.227.21 list=ip_blacklist
+add address=185.199.108.133 list=ip_blacklist
+add address=185.199.111.133 list=ip_blacklist
+add address=194.38.23.2 list=ip_blacklist
+add address=104.21.25.238 list=ip_blacklist
+add address=104.238.164.89 list=ip_blacklist
+add address=85.209.135.65 list=ip_blacklist
+add address=104.21.95.4 list=ip_blacklist
+add address=185.106.94.146 list=ip_blacklist
+add address=139.99.124.170 list=ip_blacklist
+add address=20.197.249.49 list=ip_blacklist
+add address=172.67.142.117 list=ip_blacklist
+add address=80.85.241.15 list=ip_blacklist
+add address=79.137.203.156 list=ip_blacklist
+add address=13.90.43.171 list=ip_blacklist
+add address=165.22.51.146 list=ip_blacklist
+add address=52.31.138.68 list=ip_blacklist
+add address=77.91.78.56 list=ip_blacklist
+add address=185.82.202.126 list=ip_blacklist
+add address=172.67.208.230 list=ip_blacklist
+add address=77.91.84.42 list=ip_blacklist
+add address=dw.c4kdeliver.top list=ip_blacklist
+
+/ip firewall raw
+add action=drop chain=prerouting comment=\
+    "IP Attacker CPU Overload Server Inova" src-address-list=ip_blacklist
+add action=drop chain=prerouting comment=\
+    "IP Attacker CPU Overload Server Inova" dst-address-list=ip_blacklist
+	
+
+
+

@@ -1,0 +1,19 @@
+# DoH Google
+/tool fetch url=https://curl.se/ca/cacert.pem
+/certificate import file-name=cacert.pem passphrase=""
+/ip dns
+set allow-remote-requests=yes max-concurrent-queries=3000 \
+    max-concurrent-tcp-sessions=1000 servers=8.8.8.8,8.8.4.4 \
+    use-doh-server=https://dns.google/dns-query verify-doh-cert=yes
+/ip dns static
+add address=8.8.8.8 name=dns.google
+add address=8.8.4.4 name=dns.google
+
+
+# DoH Cloudflare
+/tool fetch url=https://curl.se/ca/cacert.pem
+/certificate import file-name=cacert.pem passphrase=""
+/ip dns set allow-remote-requests=yes max-concurrent-queries=3000 servers=1.1.1.1,1.0.0.1 max-concurrent-tcp-sessions=1000 use-doh-server=https://cloudflare-dns.com/dns-query verify-doh-cert=yes
+/ip dns static
+add address=104.16.248.249 name=cloudflare-dns.com
+add address=104.16.249.249 name=cloudflare-dns.com

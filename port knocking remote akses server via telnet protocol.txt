@@ -1,0 +1,20 @@
+-- port knocking router rsias
+/ip firewall filter
+add action=add-src-to-address-list address-list=ICMP-Knocking-Server-SIMRS \
+    address-list-timeout=10m chain=forward comment=\
+    "ICMP Port Knocking Server SIMRS" dst-address=192.168.100.2 protocol=icmp
+add action=add-src-to-address-list address-list=ICMP-Knocking-Server-SIMRS \
+    address-list-timeout=10m chain=forward comment=\
+    "ICMP Port Knocking Server SIMRS" dst-address=192.168.100.3 protocol=icmp
+add action=drop chain=forward comment="Drop Port Telnet 2323 Knocking Server SIMRS" dst-port=\
+    2323 protocol=tcp src-address-list=!ICMP-Knocking-Server-SIMRS
+	
+
+-- port knocking router rsrib
+/ip firewall filter
+add action=add-src-to-address-list address-list=ICMP-Knocking-Server-SIMRS \
+    address-list-timeout=10m chain=forward comment=\
+    "ICMP Port Knocking Server SIMRS" dst-address=192.168.4.5 protocol=icmp
+add action=drop chain=forward comment="Drop Port Telnet 2323 Knocking Server SIMRS" dst-port=\
+    2323 protocol=tcp src-address-list=!ICMP-Knocking-Server-SIMRS
+	

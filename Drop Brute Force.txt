@@ -1,0 +1,11 @@
+ip firewall filter
+add chain=input protocol=tcp dst-port=21,22,23,8291,8728 src-address-list=bruteforce_blacklist action=drop comment="drop brute forcers" disabled=no
+add chain=input protocol=tcp dst-port=21,22,23,8291,8728 connection-state=new  src-address-list=bruteforce_stage3 action=add-src-to-address-list address-list=bruteforce_blacklist address-list-timeout=10d comment="" disabled=no
+add chain=input protocol=tcp dst-port=21,22,23,8291,8728 connection-state=new src-address-list=bruteforce_stage2 action=add-src-to-address-list address-list=bruteforce_stage3 address-list-timeout=1m comment="" disabled=no
+add chain=input protocol=tcp dst-port=21,22,23,8291,8728 connection-state=new src-address-list=bruteforce_stage1 action=add-src-to-address-list address-list=bruteforce_stage2 address-list-timeout=1m comment="" disabled=no
+add chain=input protocol=tcp dst-port=21,22,23,8291,8728 connection-state=new action=add-src-to-address-list address-list=bruteforce_stage1 address-list-timeout=1m comment="" disabled=no
+
+/ip firewall filter
+add chain=input protocol=tcp dst-port=21 src-address-list=ftp_blacklist action=drop comment="drop ftp brute forcers"
+add chain=output action=accept protocol=tcp content="530 Login incorrect" dst-limit=1/1m,9,dst-address/1m
+add chain=output action=add-dst-to-address-list protocol=tcp content="530 Login incorrect" address-list=ftp_blacklist address-list-timeout=3h
